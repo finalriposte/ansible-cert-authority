@@ -46,5 +46,6 @@ int_domain: The intermediate domain that you are creating the CA for.
 
 
 !!!IT IS HIGHLY RECOMMENDED THAT YOU RUN VAULT ON THE TWO YML FILES WITH SECRETS!!!
+
 ansible-vault encrypt roles/root/vars/main.yml
 ansible-vault encrypt roles/intemediate/vars/main.yml
