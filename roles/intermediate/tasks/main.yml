@@ -78,8 +78,6 @@
 - name: "Now create the cert."
   environment:
   shell: openssl ca -config '{{ ca_root_dir }}/{{ catype }}-ca.cnf' -extensions v3_intermediate_ca -days 3650 -notext -md sha256 -in '{{ ca_root_dir }}/{{ int_domain }}/csr/intermediate.csr.pem' -out '{{ ca_root_dir }}/{{ int_domain }}/certs/{{ int_domain }}.cert.pem' -batch
-  args:
-    chdir: '{{ ca_root_dir }}'
 
 - name: "verify permissions."
   file:
@@ -87,3 +85,7 @@
     mode: 0400
     owner: root
     group: root
+
+- name: "Now create the crl."
+  environment:
+  shell: openssl ca -config '{{ ca_root_dir }}/{{ int_domain }}/{{ catype }}-intca.cnf' -gencrl -out '{{ ca_root_dir }}/{{ int_domain }}/crl/intermediate.crl.pem'
