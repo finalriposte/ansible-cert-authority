@@ -1,0 +1,12 @@
+---
+
+- name: "Creating the CA directory."
+  hosts: localhost
+  roles:
+    - role: common
+      tags: common
+    - role: root
+      tags: root
+    - role: intermediate
+      tags: intermediate
+  tasks:

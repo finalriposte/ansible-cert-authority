@@ -1,0 +1,46 @@
+- name: "Install openssl."
+  apt:
+    pkg: openssl
+    state: present
+    update_cache: true
+- name: "Install python3-openssl."
+  apt:
+    pkg: python3-openssl
+    state: present
+    update_cache: true
+
+- block:
+  - name: "Checking directories."
+    stat:
+      path: "{{item}}"
+    register: folder_stats
+    with_items:
+    - ["{{ ca_root_dir }}","{{ ca_root_dir }}/certs","{{ ca_root_dir }}/crl","{{ ca_root_dir }}/newcerts","{{ ca_root_dir }}/private"]
+  - name: "Creating directories."
+    file:
+      path: "{{item.item}}"
+      state: directory
+      mode: 0700
+      group: root
+      owner: root
+    when: item.stat.exists == false
+    with_items:
+      - "{{folder_stats.results}}"
+
+- name: create CA text files
+  register: index.txt
+  template:
+    src: index.txt.j2
+    dest: '{{ ca_root_dir }}/index.txt'
+    mode: 0600
+    owner: root
+    group: root
+
+- name: create serial file
+  register: serial
+  template:
+    src: serial.j2
+    dest: '{{ ca_root_dir }}/serial'
+    mode: 0600
+    owner: root
+    group: root

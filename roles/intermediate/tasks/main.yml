@@ -1,0 +1,74 @@
+- block:
+  - name: "Checking intermediate directories."
+    stat:
+      path: "{{item}}"
+    register: folder_stats
+    with_items:
+    - ["{{ ca_root_dir }}/{{ int_domain }}",
+       "{{ ca_root_dir }}/{{ int_domain }}/certs",
+       "{{ ca_root_dir }}/{{ int_domain }}/crl",
+       "{{ ca_root_dir }}/{{ int_domain }}/csr",
+       "{{ ca_root_dir }}/{{ int_domain }}/newcerts",
+       "{{ ca_root_dir }}/{{ int_domain }}/private"]
+  - name: "Creating directories."
+    file:
+      path: "{{item.item}}"
+      state: directory
+      mode: 0700
+      group: root
+      owner: root
+    when: item.stat.exists == false
+    with_items:
+      - "{{folder_stats.results}}"
+
+- name:
+  register: serial
+  template:
+    src: serial.j2
+    dest: '{{ ca_root_dir }}/{{ int_domain }}/serial'
+    mode: 600
+    group: root
+    owner: root
+
+- name:
+  register: crlnumber
+  template:
+    src: crlnumber.j2
+    dest: '{{ ca_root_dir }}/{{ int_domain }}/crlnumber'
+    mode: 600
+    group: root
+    owner: root
+
+- name: "Create configuration file."
+  register: int-ca-config
+  template:
+    src: openssl-int.cnf.j2
+    dest: '{{ ca_root_dir }}/{{ int_domain }}/{{ int_domain }}-intca.cnf'
+    mode: 0600
+    owner: root
+    group: root 
+    
+- name: "Create private key."
+  environment:
+    OPENSSL_CONF: '{{ ca_root_dir }}/{{ int_domain }}/{{ int_domain }}-intca.cnf'
+  openssl_privatekey:
+    path: '{{ ca_root_dir }}/{{ int_domain }}/private/{{ int_domain }}-ca.key.pem'
+    passphrase: '{{ ca_key }}'
+    cipher: aes256
+
+- name: "Using openssl to create the CSR."
+  environment:
+    OPENSSL_CONF: '{{ ca_root_dir }}/{{ int_domain }}/{{ int_domain }}-intca.cnf'
+  shell: openssl req -config '{{ ca_root_dir }}/{{ int_domain }}/{{ int_domain }}-intca.cnf' -new -sha256 -key '{{ ca_root_dir }}/{{ int_domain }}/private/{{ int_domain }}-ca.key.pem' -out '{{ ca_root_dir }}/{{ int_domain}}/csr/intermediate.csr.pem' -subj '/emailAddress={{ email }}/CN={{ common }}/O={{ org }}/OU={{ org }}/C={{ country }}/ST={{ state }}/L={{ loc }}'
+
+- name: "Now create the cert."
+  environment:
+    OPENSSL_CONF: '{{ ca_root_dir }}/root-ca.cnf'
+  shell: openssl ca -config '{{ ca_root_dir }}/root-ca.cnf' -extensions v3_intermediate_ca -days 3650 -notext -md sha256 -in '{{ ca_root_dir }}/{{ int_domain }}/csr/intermediate.csr.pem' -out '{{ ca_root_dir }}/{{ int_domain }}/certs/{{ int_domain }}.cert.pem'
+
+- name: "verify permissions."
+  file:
+    path: '{{ ca_root_dir }}/{{ int_domain}}/certs/{{ int_domain }}.cert.pem' 
+    mode: 0400
+    owner: root
+    group: root
