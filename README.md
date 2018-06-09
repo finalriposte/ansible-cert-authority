@@ -15,7 +15,7 @@ ansible-playbook -c local main.yml
 
 To create a root CA only:
 
-ansible-playbook -c local main.yml --tags root
+ansible-playbook -c local main.yml --tags common,root
 
 Once the root CA is created you can create an interemediate CA only by using:
 
