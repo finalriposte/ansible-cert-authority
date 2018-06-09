@@ -1,6 +1,6 @@
 - name: "Create configuration file."
   environment:
-    OPENSSL_CONF: '{{ ca_root_dir }}/root-ca.cnf'
+    OPENSSL_CONF: '{{ ca_root_dir }}/{{ catype }}-ca.cnf'
   register: root-ca-config
   template:
     src: openssl-root.cnf.j2

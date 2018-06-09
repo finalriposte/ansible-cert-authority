@@ -1,7 +1,5 @@
-ca_root_dir: 
-int_domain: 
+ca_root_dir: /opt/CA
 catype: root 
-domain: 
 email: 
 org: 
 country: 

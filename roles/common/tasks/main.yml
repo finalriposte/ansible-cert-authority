@@ -15,17 +15,17 @@
       path: "{{item}}"
     register: folder_stats
     with_items:
-    - ["{{ ca_root_dir }}","{{ ca_root_dir }}/certs","{{ ca_root_dir }}/crl","{{ ca_root_dir }}/newcerts","{{ ca_root_dir }}/private"]
+    - ['{{ ca_root_dir }}','{{ ca_root_dir }}/certs','{{ ca_root_dir }}/crl','{{ ca_root_dir }}/newcerts','{{ ca_root_dir }}/private']
   - name: "Creating directories."
     file:
-      path: "{{item.item}}"
+      path: '{{ item.item }}'
       state: directory
       mode: 0700
       group: root
       owner: root
     when: item.stat.exists == false
     with_items:
-      - "{{folder_stats.results}}"
+      - '{{ folder_stats.results }}'
 
 - name: create CA text files
   register: index.txt
