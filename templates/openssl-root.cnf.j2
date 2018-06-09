@@ -73,21 +73,21 @@ x509_extensions     = v3_ca
 #organizationalUnitName          = Organizational Unit Name
 #commonName                      = Common Name
 #emailAddress                    = Email Address
-C			= AU
-ST			= VIC
-L			= Melbourne
-O			= Final Riposte
-OU			= Final Riposte
-CN			= Root CA
-emailAddress		= www@finalriposte.net
+C			= {{ country }}
+ST			= {{ state }}
+L			= {{ loc }}
+O			= {{ org }}
+OU			= {{ org }}
+CN			= {{ common }}
+emailAddress		= {{ email }}
 
 # Optionally, specify some defaults.
-countryName_default             = AU
-stateOrProvinceName_default     = VIC
-localityName_default            = Melbourne
-0.organizationName_default      = Final Riposte
-organizationalUnitName_default = Final Riposte
-emailAddress_default           = www@finalriposte.net
+countryName_default             = {{ country }}
+stateOrProvinceName_default     = {{ state }}
+localityName_default            = {{ loc }}
+0.organizationName_default      = {{ org }}
+organizationalUnitName_default = {{ org }}
+emailAddress_default           = {{ email }}
 
 [ v3_ca ]
 # Extensions for a typical CA (`man x509v3_config`).
