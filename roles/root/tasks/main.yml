@@ -1,3 +1,30 @@
+- name: create CA text files
+  register: index.txt
+  template:
+    src: index.txt.j2
+    dest: '{{ ca_root_dir }}/index.txt'
+    mode: 0600
+    owner: root
+    group: root
+
+- name: create serial file
+  register: serial
+  template:
+    src: serial.j2
+    dest: '{{ ca_root_dir }}/serial'
+    mode: 0600
+    owner: root
+    group: root
+
+- name: "Create crlnumber file"
+  register: crlnumber
+  template:
+    src: crlnumber.j2
+    dest: '{{ ca_root_dir }}/crlnumber'
+    mode: 0600
+    group: root
+    owner: root
+
 - name: "Create configuration file."
   environment:
     OPENSSL_CONF: '{{ ca_root_dir }}/{{ catype }}-ca.cnf'
@@ -19,4 +46,8 @@
   shell: openssl req -config /opt/CA/root-ca.cnf -key /opt/CA/private/root-ca.key.pem -new -x509 -days 7300 -sha512 -extensions v3_ca -out /opt/CA/certs/root-ca.cert.pem -subj "/emailAddress={{ email }}/CN={{ common }}/O={{ org }}/OU={{ org }}/C={{ country }}/ST={{ state }}/L={{ loc }}"
 
 - name: "verify permissions."
-  shell: chmod 400 /opt/CA/certs/*
+  file:
+    path: '{{ ca_root_dir }}/private/{{ catype }}-ca.key.pem'
+    mode: 0400
+    owner: root
+    group: root
