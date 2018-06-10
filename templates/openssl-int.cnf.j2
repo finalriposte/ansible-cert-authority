@@ -116,6 +116,10 @@ authorityKeyIdentifier = keyid,issuer:always
 keyUsage = critical, digitalSignature, keyEncipherment
 extendedKeyUsage = serverAuth
 crlDistributionPoints = URI:http://crl.{{ domain }}/intermediate.crl.pem
+<<<<<<< HEAD
+authorityInfoAccess = OCSP;URI:http://oscp.{{ domain }}
+=======
+>>>>>>> d9fa34ff97403889245db49c37595a1fa2b28abb
 
 [ crl_ext ]
 # Extension for CRLs (`man x509v3_config`).

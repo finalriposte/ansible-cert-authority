@@ -88,4 +88,41 @@
 
 - name: "Now create the crl."
   environment:
+<<<<<<< HEAD
+  shell: openssl ca -config '{{ ca_root_dir }}/{{ int_domain }}/{{ int_domain }}-intca.cnf' -gencrl -out '{{ ca_root_dir }}/{{ int_domain }}/crl/intermediate.crl.pem'
+
+- name: "verify permissions."
+  file:
+    path: '{{ ca_root_dir }}/{{ int_domain}}/crl/intermediate.crl.pem'
+    mode: 0400
+    owner: root
+    group: root
+
+- name: "Now create the OCSP private key."
+  environment:
+  shell: openssl genrsa -aes256 -out '{{ ca_root_dir }}/{{ int_domain }}/private/ocsp.{{ int_domain }}.key.pem' 4096
+
+- name: "Now create the OCSP csr."
+  environment:
+  shell: openssl req -config '{{ ca_root_dir }}/{{ int_domain }}/{{ int_domain }}-intca.cnf' -new -sha256 -key '{{ ca_root_dir }}/{{ int_domain }}/private/ocsp.{{ int_domain}}.key.pem' -out '{{ ca_root_dir }}/{{ int_domain }}/csr/ocsp.{{ int_domain }}.csr.pem' -subj '/C={{ country }}/ST={{ state }}/L={{ loc }}/OU={{ org }}/O={{ org }}/CN=ocsp.{{ domain }}'
+
+- name: "Now create the OCSP cert."
+  environment:
+  shell: openssl ca -config '{{ ca_root_dir }}/{{ int_domain }}/{{ int_domain }}-intca.cnf' -extensions ocsp -days 375 -notext -md sha256 -in '{{ ca_root_dir }}/{{ int_domain }}/csr/ocsp.{{ int_domain }}.csr.pem' -out '{{ ca_root_dir }}/{{ int_domain }}/certs/ocsp.{{ int_domain }}.cert.pem' -batch
+
+- name: "verify permissions."
+  file:
+    path: '{{ ca_root_dir }}/{{ int_domain }}/private/ocsp.{{ int_domain }}.key.pem'
+    mode: 0400
+    owner: root
+    group: root
+
+- name: "verify permissions."
+  file:
+    path: '{{ ca_root_dir }}/{{ int_domain}}/certs/ocsp.{{ int_domain }}.cert.pem'
+    mode: 0400
+    owner: root
+    group: root
+=======
   shell: openssl ca -config '{{ ca_root_dir }}/{{ int_domain }}/{{ catype }}-intca.cnf' -gencrl -out '{{ ca_root_dir }}/{{ int_domain }}/crl/intermediate.crl.pem'
+>>>>>>> d9fa34ff97403889245db49c37595a1fa2b28abb
